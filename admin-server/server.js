@@ -74,10 +74,15 @@ function getOrderedImages() {
 
 app.get('/', (req, res) => {
   const files = getOrderedImages();
-  const cards = files.map(f => `
+  const cards = files.map(f => {
+    const isVideo = /\.(mp4|webm|mov|m4v)$/i.test(f.name);
+    const media = isVideo
+      ? `<video src="/images/${f.name}" muted playsinline preload="metadata"></video>`
+      : `<img src="/images/${f.name}" alt="${f.name}">`;
+    return `
     <div class="card" draggable="true" data-name="${f.name}">
       <div class="thumb">
-        <img src="/images/${f.name}" alt="${f.name}">
+        ${media}
       </div>
       <div class="meta">
         <div class="name">${f.name}</div>
@@ -85,7 +90,8 @@ app.get('/', (req, res) => {
       </div>
       <button class="danger" data-file="${f.name}">Delete</button>
     </div>
-  `).join('');
+  `;
+  }).join('');
   res.send(`
     <!doctype html>
     <html>
@@ -196,7 +202,8 @@ app.get('/', (req, res) => {
           .card:nth-child(9) { animation-delay:0.18s; }
           .card:nth-child(10) { animation-delay:0.20s; }
           .thumb { border-radius:12px; overflow:hidden; background:#f1f1f1; }
-          .card img { width:100%; height:auto; display:block; }
+          .card img,
+          .card video { width:100%; height:auto; display:block; }
           .meta { margin:10px 0 6px; }
           .name { font-size:12px; color:#1f2937; word-break:break-all; }
           .size { font-size:11px; color:var(--muted); }
@@ -235,7 +242,7 @@ app.get('/', (req, res) => {
             <div class="panel">
               <form id="uploadForm" method="POST" action="/upload" enctype="multipart/form-data">
                 <label class="btn warn" for="fileInput">Choose files</label>
-                <input id="fileInput" class="hidden" type="file" name="images" accept="image/*" multiple required>
+                <input id="fileInput" class="hidden" type="file" name="images" accept="image/*,video/mp4,video/webm,video/quicktime,video/x-m4v" multiple required>
                 <button class="btn" type="submit">Upload</button>
               </form>
               <div class="drop" id="dropZone">Drag & drop images here</div>

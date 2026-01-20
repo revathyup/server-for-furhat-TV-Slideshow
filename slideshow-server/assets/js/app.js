@@ -30,7 +30,7 @@ function showRandomImage() {
   if (images.length === 0) return;
 
   if (images.length === 1) {
-    img.src = "/assets/images/" + images[0];
+    img.src = "/images/" + images[0];
     return;
   }
 
@@ -40,7 +40,7 @@ function showRandomImage() {
   }
 
   lastIndex = randomIndex;
-  img.src = "/assets/images/" + images[randomIndex];
+  img.src = "/images/" + images[randomIndex];
 }
 
 (async function start() {

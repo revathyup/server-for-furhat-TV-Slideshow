@@ -21,6 +21,10 @@ body {
     color: #e8edf2;
     padding: 24px 20px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow: hidden;
 }
 
 #clock {
@@ -29,6 +33,92 @@ body {
     color: black;
     font-family: "Consolas", "Lucida Console", "Courier New", monospace;
     letter-spacing: 0.5px;
+}
+
+#notes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+}
+
+#calendar {
+    background: rgba(15, 24, 31, 0.08);
+    border: 1px solid rgba(15, 24, 31, 0.12);
+    border-radius: 12px;
+    padding: 12px 12px 10px;
+    color: #1f1f1f;
+}
+
+.calendar-title {
+    font-weight: 700;
+    color: #1f1f1f;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+#calendar-events {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 30vh;
+    overflow-y: auto;
+}
+
+.event-item {
+    background: rgba(255, 255, 255, 0.9);
+    border-left: 3px solid #1f6f8b;
+    border-radius: 8px;
+    padding: 8px 10px 8px 9px;
+    color: #1f1f1f;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.event-time {
+    font-size: 12px;
+    color: #3c3c3c;
+    margin-bottom: 4px;
+}
+
+.event-title {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.events-empty {
+    font-size: 14px;
+    color: #3c3c3c;
+}
+
+.panel-divider {
+    height: 1px;
+    background: rgba(31, 31, 31, 0.2);
+    margin: 6px 0;
+}
+
+.note-item {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: #1f1f1f;
+}
+
+.note-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.note-body {
+    font-size: 14px;
+    line-height: 1.35;
+    white-space: pre-wrap;
+}
+
+.notes-empty {
+    font-size: 14px;
+    color: #3c3c3c;
 }
 
 #app {

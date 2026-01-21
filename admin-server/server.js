@@ -6,6 +6,7 @@ const path = require('path');
 const imagesDir = path.join(__dirname, 'images');
 if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir);
 const orderPath = path.join(__dirname, 'order.json');
+const notesPath = path.join(__dirname, 'notes.json');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, imagesDir),
@@ -33,6 +34,29 @@ function loadOrder() {
 
 function saveOrder(order) {
   fs.writeFileSync(orderPath, JSON.stringify(order, null, 2));
+}
+
+function loadNotes() {
+  try {
+    const raw = fs.readFileSync(notesPath, 'utf8');
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+function saveNotes(notes) {
+  fs.writeFileSync(notesPath, JSON.stringify(notes, null, 2));
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function readImages() {
@@ -74,6 +98,7 @@ function getOrderedImages() {
 
 app.get('/', (req, res) => {
   const files = getOrderedImages();
+  const notes = loadNotes();
   const cards = files.map(f => {
     const isVideo = /\.(mp4|webm|mov|m4v)$/i.test(f.name);
     const media = isVideo
@@ -92,6 +117,13 @@ app.get('/', (req, res) => {
     </div>
   `;
   }).join('');
+  const notesMarkup = notes.map(note => `
+    <div class="note-card">
+      <div class="note-title">${escapeHtml(note.title)}</div>
+      <div class="note-body">${escapeHtml(note.body)}</div>
+      <button class="danger small" data-note-id="${note.id}">Delete</button>
+    </div>
+  `).join('');
   res.send(`
     <!doctype html>
     <html>
@@ -147,6 +179,52 @@ app.get('/', (req, res) => {
             background:radial-gradient(200px 120px at 80% -10%, rgba(245,158,11,0.15), transparent 60%);
             pointer-events:none;
           }
+          .notes {
+            margin-top:22px;
+            display:grid;
+            grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr);
+            gap:16px;
+          }
+          .note-panel,
+          .note-list {
+            background:var(--card);
+            border-radius:16px;
+            padding:16px;
+            box-shadow:var(--shadow);
+          }
+          .note-panel h2 {
+            margin:0 0 12px;
+            font-size:16px;
+          }
+          .note-panel label {
+            display:block;
+            font-size:12px;
+            color:var(--muted);
+            margin-bottom:6px;
+          }
+          .note-panel input,
+          .note-panel textarea {
+            width:100%;
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:8px 10px;
+            font-family:inherit;
+            font-size:13px;
+          }
+          .note-panel textarea { min-height:90px; resize:vertical; }
+          .note-panel .btn { margin-top:10px; }
+          .note-list { display:flex; flex-direction:column; gap:12px; }
+          .note-card {
+            border:1px solid #eceef3;
+            border-radius:12px;
+            padding:10px 12px;
+            display:flex;
+            flex-direction:column;
+            gap:6px;
+          }
+          .note-title { font-weight:700; }
+          .note-body { font-size:13px; color:var(--muted); white-space:pre-wrap; }
+          .danger.small { padding:6px 10px; font-size:12px; align-self:flex-start; }
           .drop {
             border:2px dashed #b7bcc7;
             background:linear-gradient(135deg, #fff6ea, #ffffff);
@@ -223,6 +301,7 @@ app.get('/', (req, res) => {
           @media (max-width: 720px) {
             header { flex-direction:column; align-items:flex-start; }
             .panel { align-items:flex-start; }
+            .notes { grid-template-columns: 1fr; }
           }
         </style>
       </head>
@@ -248,6 +327,21 @@ app.get('/', (req, res) => {
               <div class="drop" id="dropZone">Drag & drop images here</div>
               <div class="muted">Tip: drag cards to reorder the slideshow.</div>
             </div>
+            <div class="notes">
+              <div class="note-panel">
+                <h2>Notes for slideshow</h2>
+                <form id="noteForm" method="POST" action="/notes">
+                  <label for="noteTitle">Title</label>
+                  <input id="noteTitle" name="title" type="text" required>
+                  <label for="noteBody">Body</label>
+                  <textarea id="noteBody" name="body" required></textarea>
+                  <button class="btn" type="submit">Add note</button>
+                </form>
+              </div>
+              <div class="note-list">
+                ${notesMarkup || '<div class="muted">No notes yet</div>'}
+              </div>
+            </div>
             <div class="grid">
               ${cards || '<div class="muted">No images yet</div>'}
             </div>
@@ -257,6 +351,9 @@ app.get('/', (req, res) => {
           const drop = document.getElementById('dropZone');
           const input = document.getElementById('fileInput');
           const form = document.getElementById('uploadForm');
+          const noteForm = document.getElementById('noteForm');
+          const noteTitle = document.getElementById('noteTitle');
+          const noteBody = document.getElementById('noteBody');
 
           window.addEventListener('dragover', (e) => e.preventDefault());
           window.addEventListener('drop', (e) => e.preventDefault());
@@ -281,11 +378,30 @@ app.get('/', (req, res) => {
             fetch('/upload', { method: 'POST', body: data }).then(() => location.reload());
           });
 
+          if (noteForm) {
+            noteForm.addEventListener('submit', (e) => {
+              e.preventDefault();
+              const data = new URLSearchParams({
+                title: noteTitle.value,
+                body: noteBody.value
+              });
+              fetch('/notes', { method: 'POST', body: data }).then(() => location.reload());
+            });
+          }
+
           document.querySelectorAll('button[data-file]').forEach(btn => {
             btn.addEventListener('click', () => {
               if (!confirm('Delete this image?')) return;
               const data = new URLSearchParams({ file: btn.dataset.file });
               fetch('/delete', { method: 'POST', body: data }).then(() => location.reload());
+            });
+          });
+
+          document.querySelectorAll('button[data-note-id]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              if (!confirm('Delete this note?')) return;
+              const data = new URLSearchParams({ id: btn.dataset.noteId });
+              fetch('/notes/delete', { method: 'POST', body: data }).then(() => location.reload());
             });
           });
 
@@ -330,6 +446,28 @@ app.post('/delete', (req, res) => {
   if (fs.existsSync(p)) fs.unlinkSync(p);
   const order = loadOrder().filter(name => name !== file);
   saveOrder(order);
+  res.redirect('/');
+});
+
+app.post('/notes', (req, res) => {
+  const title = String(req.body.title || '').trim();
+  const body = String(req.body.body || '').trim();
+  if (!title && !body) return res.redirect('/');
+  const notes = loadNotes();
+  notes.unshift({
+    id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+    title,
+    body,
+    createdAt: Date.now()
+  });
+  saveNotes(notes);
+  res.redirect('/');
+});
+
+app.post('/notes/delete', (req, res) => {
+  const id = String(req.body.id || '');
+  const notes = loadNotes().filter(note => note.id !== id);
+  saveNotes(notes);
   res.redirect('/');
 });
 

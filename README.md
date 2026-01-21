@@ -1,2 +1,2 @@
 # tv-remote
-interactive server conencting the big tv at the office ,,to the daashboard highlighting th efuhrats pics,announcements,,,etc
+interactive server conencting the big tv.s at the office ,,to the daashboard highlighting the furhats memories,,new updates,,,pics,announcements,,,etc

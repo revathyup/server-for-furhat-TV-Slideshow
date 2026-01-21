@@ -11,8 +11,7 @@ const PORT = 8090;
 const adminImagesDir = path.join(__dirname, "..", "admin-server", "images");
 const orderPath = path.join(__dirname, "..", "admin-server", "order.json");
 const notesPath = path.join(__dirname, "..", "admin-server", "notes.json");
-const CALENDAR_ID =
-  "c_f98ac9aced62fd3fef6a8a93c9312dba238fcc6ea3665b05f2333d536483379c@group.calendar.google.com";
+const CALENDAR_ID = "lucas@furhatrobotics.com";
 const CALENDAR_TZ = "Europe/Berlin";
 const GOOGLE_API_KEY =
   process.env.GOOGLE_API_KEY || "AIzaSyBr8IB-LqKYUa0fq9_NQ9dKwi-zLW6nI7U";

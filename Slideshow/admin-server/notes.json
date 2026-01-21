@@ -1,0 +1,20 @@
+[
+  {
+    "id": "mknyikx2gk3ecw",
+    "title": "Note number 3",
+    "body": "What happens if I keep adding notes so that they will be larger than the window which both displays note in the admin and on the slideshow????",
+    "createdAt": 1768995952742
+  },
+  {
+    "id": "mknyi02k5ypl0y",
+    "title": "Note number 2",
+    "body": "Another super interesting and super important note that everyone should see and this one is longer to test how the line break works.\n\nAnd this is a new paragraph which will also be longer because this is a very long note because someone needed to write a lot of information and it is very important that all the details are correct!",
+    "createdAt": 1768995925724
+  },
+  {
+    "id": "mknyftglh3xorg",
+    "title": "Note title",
+    "body": "Very interesting note body text",
+    "createdAt": 1768995823845
+  }
+]

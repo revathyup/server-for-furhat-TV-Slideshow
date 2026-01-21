@@ -1,0 +1,80 @@
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    background: rgb(0, 0, 0);
+}
+
+#layout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#info-panel {
+    width: 260px;
+    min-width: 220px;
+    background: #d6cec4;
+    color: #e8edf2;
+    padding: 24px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow: hidden;
+}
+
+#clock {
+    font-size: 48px;
+    text-align: center;
+    color: black;
+    font-family: "Consolas", "Lucida Console", "Courier New", monospace;
+    letter-spacing: 0.5px;
+}
+
+#notes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+}
+
+.note-item {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: #1f1f1f;
+}
+
+.note-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.note-body {
+    font-size: 14px;
+    line-height: 1.35;
+    white-space: pre-wrap;
+}
+
+.notes-empty {
+    font-size: 14px;
+    color: #3c3c3c;
+}
+
+#app {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+#app img,
+#app video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
